@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Playlist Updates</title>
+  </head>
+  <body onload="start_app()">
+    <div id="login-container" class="pre-auth">This application requires access to your YouTube account.
+      Please <a href="#" id="login-link">authorize</a> to continue.
+    </div>
+    <div id="buttons">
+
+      <button id="playlist-button" disabled onclick="createPlaylist()">Create a new Private Playlist</button>
+      <br>
+      <label>Current Playlist Id: <input id="playlist-id" value='' type="text"/></label>
+      <br>
+      <label>Video Id: <input id="video-id" value='GZG9G5txtaE' type="text"/></label><button onclick="addVideoToPlaylist()">Add to current playlist</button><button onclick="write_to_console()">Test</button>
+    </div>
+
+    <h3>Playlist: <span id="playlist-title"></span></h3>
+    <p id="playlist-description"></p>
+    <div id="playlist-container">
+      <span id="status">No Videos</span>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="auth.js"></script>
+    <script src="playlist_updates.js"></script>
+    <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
+  </body>
+  <script>
+    var json_file_obj;
+
+    function loadJSON(callback) {
+
+     var xobj = new XMLHttpRequest();
+         xobj.overrideMimeType("application/json");
+     xobj.open('GET', 'stub.json', true); // Replace 'my_data' with the path to your file
+     xobj.onreadystatechange = function () {
+           if (xobj.readyState == 4 && xobj.status == "200") {
+             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+             callback(xobj.responseText);
+           }
+     };
+     xobj.send(null);
+    }
+
+    function start_app() {
+      loadJSON(function(response) {
+        json_file_obj = JSON.parse(response);
+      });
+    }
+
+    function spotify_to_obj(spotify_tracks) {
+      var tracks = [];
+      var new_list = [];
+      spotify_tracks.items.forEach(function(track) {
+
+        tracks.push({
+          track_name: track.track.name,
+          artists: track.track.artists.map(function(artist) {return artist.name})
+        })
+      });
+      console.log(tracks);
+    }
+
+    function write_to_console() {
+      spotify_to_obj(json_file_obj);
+    }
+
+  </script>
+</html>
